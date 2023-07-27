@@ -18,7 +18,10 @@ export class AppComponent implements AfterViewInit {
   markerTop = 0; // Distance from top of window.
   imageLeft = 350; // Initial left of dot from top-left of image.
   imageTop = 100; // Initial top of dot from top-left of image.
-  imageDimension: any;
+  imageDimension: Record<any, any> = {};
+
+  scaleHeight: number = 100;
+  scaleWidth: number = 100;
 
   markerArray = [
     {
@@ -42,7 +45,7 @@ export class AppComponent implements AfterViewInit {
   ngAfterViewInit(): void {
     this.renderer.listen(this.elementView.nativeElement, 'load', () => {
       this.initMarker();
-    });
+    }); // Set 2nd argument here for delay in rendering, goes well w async stuff.
   }
 
   initMarker(): void {
@@ -50,19 +53,19 @@ export class AppComponent implements AfterViewInit {
       this.elementView.nativeElement.getBoundingClientRect();
     // You can access the element reference here and perform any necessary actions.
 
-    this.markerLeft = this.imageDimension.left + this.imageLeft;
-    this.markerTop = this.imageDimension.top + this.imageTop;
+    this.markerLeft = this.imageDimension['left'] + this.imageLeft;
+    this.markerTop = this.imageDimension['top'] + this.imageTop;
   }
 
   @HostListener('window:resize')
   onWindowResize() {
     this.imageDimension =
       this.elementView.nativeElement.getBoundingClientRect();
-    if (this.imageDimension) {
-      // You can access the element reference here and perform any necessary actions.
-      this.markerLeft = this.imageDimension.left + this.imageLeft;
-      this.markerTop = this.imageDimension.top + this.imageTop;
-    }
+    if (!this.imageDimension) return;
+
+    // You can access the element reference here and perform any necessary actions.
+    this.markerLeft = this.imageDimension['left'] + this.imageLeft;
+    this.markerTop = this.imageDimension['top'] + this.imageTop;
   }
 
   handleClick(event: MouseEvent): void {
