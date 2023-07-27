@@ -1,0 +1,28 @@
+:host {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  height: 95vh;
+}
+
+.container {
+  height: 500px;
+  width: 500px;
+  background-color: lightblue;
+}
+
+.marker {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background-color: red;
+  border-radius: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.marker.visible {
+  display: block;
+}
