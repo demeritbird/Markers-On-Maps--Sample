@@ -1,10 +1,5 @@
-<div class="container" #container (click)="handleClick($event)">
+<div class="container" #container>
   <img src="assets/dembird.png" alt="hello" class="imagee" id="ide" #ide />
-  <div
-    class="marker"
-    [style.left.px]="markerLeft"
-    [style.top.px]="markerTop"
-  ></div>
 
   <ng-container *ngFor="let marker of markerArray">
     <app-marker-point
