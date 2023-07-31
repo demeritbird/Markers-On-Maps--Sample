@@ -7,6 +7,7 @@ import {
   Renderer2,
   Input,
   OnInit,
+  OnChanges,
 } from '@angular/core';
 
 @Component({
@@ -14,7 +15,7 @@ import {
   templateUrl: './marker-point.component.html',
   styleUrls: ['./marker-point.component.scss'],
 })
-export class MarkerPointComponent implements AfterViewInit {
+export class MarkerPointComponent implements AfterViewInit, OnChanges {
   @Input() imageView!: ElementRef;
   @Input() image: any;
   @Input() containerView!: ElementRef;
@@ -34,6 +35,17 @@ export class MarkerPointComponent implements AfterViewInit {
   }
   initMarker(): void {
     // You can access the element reference here and perform any necessary actions.
+    this.image = this.imageView.nativeElement.getBoundingClientRect();
+    this.container = this.containerView.nativeElement.getBoundingClientRect();
+
+    this.markerLeft = this.image.left + this.imageLeft;
+    this.markerTop = this.image.top + this.imageTop;
+
+    console.log('marker', { left: this.markerLeft, top: this.markerTop });
+    console.log('image', { left: this.imageLeft, top: this.imageTop });
+  }
+
+  ngOnChanges(): void {
     this.image = this.imageView.nativeElement.getBoundingClientRect();
     this.container = this.containerView.nativeElement.getBoundingClientRect();
 

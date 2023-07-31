@@ -28,19 +28,31 @@ export class AppComponent {
 
   constructor(public elRef: ElementRef) {}
 
-  @HostListener('window:resize')
-  onWindowResize() {
+  redefineElements() {
     this.imageDimension = this.imageView.nativeElement.getBoundingClientRect();
     this.containerDimension =
       this.containerView.nativeElement.getBoundingClientRect();
 
     if (!this.imageDimension || !this.containerDimension) return;
   }
+  triggerImageMoveEvent() {
+    window.dispatchEvent(new CustomEvent('image-drag'));
+  }
+
+  @HostListener('window:resize')
+  onWindowResize() {
+    this.redefineElements();
+  }
+
+  @HostListener('window:image-drag')
+  onImageMove() {
+    this.redefineElements();
+  }
 
   scale = 1; // zoom-in factor
   panning = false; // check whether mouse is currently clicking on image.
-  pointX = 0; // distance from container left to image left --> x-coord OR markerLeft
-  pointY = 0; // distance from container top to image top --> y-coord OR markerTOP
+  pointX = 0; // distance from container left to image left --> x-coord amount dragged
+  pointY = 0; // distance from container top to image top --> y-coord amount dragged
   start = { x: 0, y: 0 }; // {distance from client left to point (clicked), distance from client top to point (clicked)}
 
   setTransform() {
@@ -48,6 +60,8 @@ export class AppComponent {
     if (zoom) {
       zoom.style.transform = `translate(${this.pointX}px, ${this.pointY}px) scale(${this.scale})`;
     }
+
+    this.triggerImageMoveEvent();
   }
 
   /**
