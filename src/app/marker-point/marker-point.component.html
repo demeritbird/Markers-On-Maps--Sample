@@ -1,4 +1,10 @@
 <div
+  *ngIf="
+    markerLeft > container.left &&
+    markerLeft < container.right &&
+    markerTop > container.top &&
+    markerTop < container.bottom
+  "
   class="marker"
   [style.left.px]="markerLeft"
   [style.top.px]="markerTop"

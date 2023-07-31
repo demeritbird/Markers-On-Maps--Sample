@@ -1,10 +1,20 @@
-<div class="container" #container>
-  <img src="assets/dembird.png" alt="hello" class="imagee" id="ide" #ide />
+<div class="container" id="container" #container>
+  <div
+    id="zoom"
+    (mousedown)="handleMouseDown($event)"
+    (mouseup)="handleMouseUp()"
+    (mousemove)="handleMouseMove($event)"
+    (wheel)="handleWheel($event)"
+  >
+    <img src="assets/dembird.png" alt="hello" class="imagee" id="ide" #ide />
+  </div>
 
   <ng-container *ngFor="let marker of markerArray">
     <app-marker-point
-      [elementView]="elementView"
+      [imageView]="imageView"
       [image]="imageDimension"
+      [containerView]="containerView"
+      [container]="containerDimension"
       [imageLeft]="marker.x"
       [imageTop]="marker.y"
     ></app-marker-point>
