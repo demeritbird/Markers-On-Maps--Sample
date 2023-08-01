@@ -53,6 +53,9 @@ export class AppComponent implements OnInit {
   }
 
   zoomFactor: number = 1; // zoom-in factor
+  MAX_ZOOM_VALUE: number = 3;
+  MIN_ZOOM_VALUE: number = 0.5;
+
   isImagePanning: boolean = false; // check whether mouse is currently clicking on image.
   posBoundToImageDist: Position = { x: 0, y: 0 };
   posImageToClickDist: Position = { x: 0, y: 0 };
@@ -106,7 +109,15 @@ export class AppComponent implements OnInit {
     const ys = (event.clientY - this.posBoundToImageDist.y) / this.zoomFactor;
     const delta = event.deltaY || event.detail || (-event as any).wheelDelta;
 
-    delta > 0 ? (this.zoomFactor *= 1.2) : (this.zoomFactor /= 1.2);
+    delta > 0
+      ? (this.zoomFactor = Math.min(
+          (this.zoomFactor *= 1.2),
+          this.MAX_ZOOM_VALUE
+        ))
+      : (this.zoomFactor = Math.max(
+          (this.zoomFactor /= 1.2),
+          this.MIN_ZOOM_VALUE
+        ));
     this.posBoundToImageDist.x = event.clientX - xs * this.zoomFactor;
     this.posBoundToImageDist.y = event.clientY - ys * this.zoomFactor;
 
