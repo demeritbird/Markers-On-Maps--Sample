@@ -61,7 +61,7 @@ export class MarkerMapComponent implements OnInit {
   posImageToClickDist: Position = { x: 0, y: 0 };
 
   setTransform() {
-    const bound = document.getElementById('zoom');
+    const bound = document.getElementById('bound');
     if (bound) {
       bound.style.transform = `translate(${this.posBoundToImageDist.x}px, ${this.posBoundToImageDist.y}px) scale(${this.zoomFactor})`;
     }
