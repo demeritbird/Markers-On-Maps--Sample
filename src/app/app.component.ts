@@ -1,4 +1,10 @@
-import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  HostListener,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { EMPTY_DOM_RECT, Position } from 'src/types';
 
 @Component({
@@ -6,28 +12,24 @@ import { EMPTY_DOM_RECT, Position } from 'src/types';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   @ViewChild('image_ref', { static: true }) imageView!: ElementRef;
   imageDimension: Omit<DOMRect, 'toJSON'> = EMPTY_DOM_RECT;
   @ViewChild('container_ref', { static: true }) containerView!: ElementRef;
   containerDimension: Omit<DOMRect, 'toJSON'> = EMPTY_DOM_RECT;
 
-  markerArray: Position[] = [
-    {
-      x: 100,
-      y: 200,
-    },
-    {
-      x: 200,
-      y: 150,
-    },
-    {
-      x: 400,
-      y: 450,
-    },
-  ];
+  markerArray: Position[] = [];
 
   constructor(public elRef: ElementRef) {}
+
+  ngOnInit() {
+    // Mock async calls from server
+    setTimeout(() => {
+      this.markerArray.push({ x: 100, y: 200 });
+      this.markerArray.push({ x: 200, y: 150 });
+      this.markerArray.push({ x: 400, y: 450 });
+    }, 500); // Perhaps dispatch event if async functions don't load?
+  }
 
   redefineElements() {
     this.imageDimension = this.imageView.nativeElement.getBoundingClientRect();
