@@ -2,7 +2,8 @@
   <div
     id="zoom"
     (mousedown)="handleMouseDown($event)"
-    (mouseup)="handleMouseUp()"
+    (mouseup)="handleMouseLeave()"
+    (mouseleave)="handleMouseLeave()"
     (mousemove)="handleMouseMove($event)"
     (wheel)="handleWheel($event)"
   >

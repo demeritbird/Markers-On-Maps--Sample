@@ -85,7 +85,7 @@ export class AppComponent implements OnInit {
   /**
    * Function runs when mouseclick stopped inside image.
    */
-  handleMouseUp() {
+  handleMouseLeave() {
     this.isImagePanning = false;
   }
 
