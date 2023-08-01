@@ -1,8 +1,3 @@
-export interface Position {
-  x: number;
-  y: number;
-}
-
 export const EMPTY_DOM_RECT = {
   x: 0,
   y: 0,

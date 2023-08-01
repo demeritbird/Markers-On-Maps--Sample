@@ -6,7 +6,9 @@ import {
   Input,
   OnChanges,
 } from '@angular/core';
-import { EMPTY_DOM_RECT, Position } from 'src/types';
+
+import { EMPTY_DOM_RECT } from 'src/utils/constants';
+import { Position } from 'src/utils/types';
 
 @Component({
   selector: 'app-marker-point',
