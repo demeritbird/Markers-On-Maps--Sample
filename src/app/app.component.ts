@@ -1,4 +1,5 @@
 import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
+import { EMPTY_DOM_RECT, Position } from 'src/types';
 
 @Component({
   selector: 'app-root',
@@ -6,12 +7,12 @@ import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
-  @ViewChild('ide', { static: true }) imageView!: ElementRef;
-  imageDimension: Record<any, any> = {};
-  @ViewChild('container', { static: true }) containerView!: ElementRef;
-  containerDimension: Record<any, any> = {};
+  @ViewChild('image_ref', { static: true }) imageView!: ElementRef;
+  imageDimension: Omit<DOMRect, 'toJSON'> = EMPTY_DOM_RECT;
+  @ViewChild('container_ref', { static: true }) containerView!: ElementRef;
+  containerDimension: Omit<DOMRect, 'toJSON'> = EMPTY_DOM_RECT;
 
-  markerArray = [
+  markerArray: Position[] = [
     {
       x: 100,
       y: 200,
@@ -36,7 +37,7 @@ export class AppComponent {
     if (!this.imageDimension || !this.containerDimension) return;
   }
   triggerImageMoveEvent() {
-    window.dispatchEvent(new CustomEvent('image-drag'));
+    window.dispatchEvent(new CustomEvent('image-shift'));
   }
 
   @HostListener('window:resize')
@@ -44,21 +45,20 @@ export class AppComponent {
     this.redefineElements();
   }
 
-  @HostListener('window:image-drag')
+  @HostListener('window:image-shift')
   onImageMove() {
     this.redefineElements();
   }
 
-  scale = 1; // zoom-in factor
-  panning = false; // check whether mouse is currently clicking on image.
-  pointX = 0; // distance from container left to image left --> x-coord amount dragged
-  pointY = 0; // distance from container top to image top --> y-coord amount dragged
-  start = { x: 0, y: 0 }; // {distance from client left to point (clicked), distance from client top to point (clicked)}
+  zoomFactor: number = 1; // zoom-in factor
+  isImagePanning: boolean = false; // check whether mouse is currently clicking on image.
+  posBoundToImageDist: Position = { x: 0, y: 0 };
+  posImageToClickDist: Position = { x: 0, y: 0 };
 
   setTransform() {
-    const zoom = document.getElementById('zoom');
-    if (zoom) {
-      zoom.style.transform = `translate(${this.pointX}px, ${this.pointY}px) scale(${this.scale})`;
+    const bound = document.getElementById('zoom');
+    if (bound) {
+      bound.style.transform = `translate(${this.posBoundToImageDist.x}px, ${this.posBoundToImageDist.y}px) scale(${this.zoomFactor})`;
     }
 
     this.triggerImageMoveEvent();
@@ -67,54 +67,46 @@ export class AppComponent {
   /**
    * Function runs when mouseclick inside image
    */
-  handleMouseDown(e: MouseEvent) {
-    e.preventDefault();
+  handleMouseDown(event: MouseEvent) {
+    event.preventDefault();
 
-    this.start = { x: e.clientX - this.pointX, y: e.clientY - this.pointY };
-    console.log('mouse ON image', {
-      start_x: this.start.x,
-      start_y: this.start.y,
-    });
-    this.panning = true;
+    this.posImageToClickDist = {
+      x: event.clientX - this.posBoundToImageDist.x,
+      y: event.clientY - this.posBoundToImageDist.y,
+    };
+    this.isImagePanning = true;
   }
 
   /**
    * Function runs when mouseclick stopped inside image.
    */
   handleMouseUp() {
-    console.log('mouse OFF image', {
-      start_x: this.start.x,
-      start_y: this.start.y,
-    });
-    this.panning = false;
+    this.isImagePanning = false;
   }
 
   /**
    * Function runs when draggin image around
    * Happens only when MOUSE ON image.
    */
-  handleMouseMove(e: MouseEvent) {
-    e.preventDefault();
-    if (!this.panning) {
-      return;
-    }
+  handleMouseMove(event: MouseEvent) {
+    event.preventDefault();
+    if (!this.isImagePanning) return;
 
-    this.pointX = e.clientX - this.start.x;
-    this.pointY = e.clientY - this.start.y;
+    this.posBoundToImageDist.x = event.clientX - this.posImageToClickDist.x;
+    this.posBoundToImageDist.y = event.clientY - this.posImageToClickDist.y;
 
-    console.log('SCROLL image', { point_x: this.pointX, point_y: this.pointY });
     this.setTransform();
   }
 
-  handleWheel(e: WheelEvent) {
-    e.preventDefault();
-    const xs = (e.clientX - this.pointX) / this.scale;
-    const ys = (e.clientY - this.pointY) / this.scale;
-    const delta = e.deltaY || e.detail || (-e as any).wheelDelta;
+  handleWheel(event: WheelEvent) {
+    event.preventDefault();
+    const xs = (event.clientX - this.posBoundToImageDist.x) / this.zoomFactor;
+    const ys = (event.clientY - this.posBoundToImageDist.y) / this.zoomFactor;
+    const delta = event.deltaY || event.detail || (-event as any).wheelDelta;
 
-    delta > 0 ? (this.scale *= 1.2) : (this.scale /= 1.2);
-    this.pointX = e.clientX - xs * this.scale;
-    this.pointY = e.clientY - ys * this.scale;
+    delta > 0 ? (this.zoomFactor *= 1.2) : (this.zoomFactor /= 1.2);
+    this.posBoundToImageDist.x = event.clientX - xs * this.zoomFactor;
+    this.posBoundToImageDist.y = event.clientY - ys * this.zoomFactor;
 
     this.setTransform();
   }

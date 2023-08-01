@@ -2,13 +2,11 @@ import {
   AfterViewInit,
   Component,
   ElementRef,
-  HostListener,
-  ViewChild,
   Renderer2,
   Input,
-  OnInit,
   OnChanges,
 } from '@angular/core';
+import { EMPTY_DOM_RECT, Position } from 'src/types';
 
 @Component({
   selector: 'app-marker-point',
@@ -17,37 +15,34 @@ import {
 })
 export class MarkerPointComponent implements AfterViewInit, OnChanges {
   @Input() imageView!: ElementRef;
-  @Input() image: any;
+  @Input() image: Omit<DOMRect, 'toJSON'> = EMPTY_DOM_RECT;
   @Input() containerView!: ElementRef;
-  @Input() container: any;
+  @Input() container: Omit<DOMRect, 'toJSON'> = EMPTY_DOM_RECT;
 
-  @Input() scaleFactor: number = 1;
-  @Input() imageLeft: number = 0; // Distance from left of image to point
-  @Input() imageTop: number = 0; // Distance from top of image to point
-  @Input() markerLeft: number = 0; // Distance from left of window to point
-  @Input() markerTop: number = 0; // Distance from top of window to point
+  @Input() zoomFactor: number = 1;
+  @Input() posImageToMarkerDist: Position = { x: 0, y: 0 };
+
+  posBountToMarkerDist: Position = { x: 0, y: 0 };
 
   constructor(public elRef: ElementRef, private renderer: Renderer2) {}
 
   ngAfterViewInit(): void {
     this.renderer.listen(this.imageView.nativeElement, 'load', () => {
       this.initMarker();
-    });
+    }); // this callback allows for a second argument, possibly for async loading.
   }
 
   updateMarkerPosition(): void {
     this.image = this.imageView.nativeElement.getBoundingClientRect();
     this.container = this.containerView.nativeElement.getBoundingClientRect();
 
-    this.markerLeft = this.image.left + this.imageLeft * this.scaleFactor;
-    this.markerTop = this.image.top + this.imageTop * this.scaleFactor;
-
-    console.log('marker', { left: this.markerLeft, top: this.markerTop });
-    console.log('image', { left: this.imageLeft, top: this.imageTop });
+    this.posBountToMarkerDist.x =
+      this.image['left'] + this.posImageToMarkerDist.x * this.zoomFactor;
+    this.posBountToMarkerDist.y =
+      this.image['top'] + this.posImageToMarkerDist.y * this.zoomFactor;
   }
 
   initMarker(): void {
-    // You can access the element reference here and perform any necessary actions.
     this.updateMarkerPosition();
   }
 
