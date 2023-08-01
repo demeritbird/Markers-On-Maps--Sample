@@ -9,6 +9,8 @@
 .container {
   height: 500px;
   width: 500px;
+  min-height: 500px;
+  min-width: 500px;
   background-color: lightblue;
   overflow: hidden;
   border: 0.2rem solid;
