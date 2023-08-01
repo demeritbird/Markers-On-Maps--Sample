@@ -99,8 +99,10 @@ export class MarkerMapComponent implements OnInit {
     event.preventDefault();
     if (!this.isImagePanning) return;
 
-    this.posBoundToImageDist.x = event.clientX - this.posImageToClickDist.x;
-    this.posBoundToImageDist.y = event.clientY - this.posImageToClickDist.y;
+    this.posBoundToImageDist = {
+      x: event.clientX - this.posImageToClickDist.x,
+      y: event.clientY - this.posImageToClickDist.y,
+    };
 
     this.setTransform();
   }
@@ -120,8 +122,10 @@ export class MarkerMapComponent implements OnInit {
           (this.zoomFactor /= 1.2),
           this.MIN_ZOOM_VALUE
         ));
-    this.posBoundToImageDist.x = event.clientX - xs * this.zoomFactor;
-    this.posBoundToImageDist.y = event.clientY - ys * this.zoomFactor;
+    this.posBoundToImageDist = {
+      x: event.clientX - xs * this.zoomFactor,
+      y: event.clientY - ys * this.zoomFactor,
+    };
 
     this.setTransform();
   }

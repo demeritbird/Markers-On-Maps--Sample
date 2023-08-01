@@ -38,10 +38,10 @@ export class MarkerPointComponent implements AfterViewInit, OnChanges {
     this.image = this.imageView.nativeElement.getBoundingClientRect();
     this.container = this.containerView.nativeElement.getBoundingClientRect();
 
-    this.posBountToMarkerDist.x =
-      this.image['left'] + this.posImageToMarkerDist.x * this.zoomFactor;
-    this.posBountToMarkerDist.y =
-      this.image['top'] + this.posImageToMarkerDist.y * this.zoomFactor;
+    this.posBountToMarkerDist = {
+      x: this.image['left'] + this.posImageToMarkerDist.x * this.zoomFactor,
+      y: this.image['top'] + this.posImageToMarkerDist.y * this.zoomFactor,
+    };
   }
 
   initMarker(): void {
