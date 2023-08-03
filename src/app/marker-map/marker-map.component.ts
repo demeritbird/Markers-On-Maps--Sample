@@ -116,11 +116,11 @@ export class MarkerMapComponent implements OnInit {
     delta > 0
       ? (this.zoomFactor = Math.min(
           (this.zoomFactor *= 1.2),
-          this.MAX_ZOOM_VALUE
+          this.MAX_ZOOM_VALUE ** 0.5
         ))
       : (this.zoomFactor = Math.max(
           (this.zoomFactor /= 1.2),
-          this.MIN_ZOOM_VALUE
+          this.MIN_ZOOM_VALUE ** 0.5
         ));
     this.posBoundToImageDist = {
       x: event.clientX - xs * this.zoomFactor,
