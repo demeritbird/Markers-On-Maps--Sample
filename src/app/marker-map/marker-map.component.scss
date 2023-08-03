@@ -1,16 +1,24 @@
-:host {
+$container-height: 500px;
+$container-width: 500px;
+@mixin flex-center {
   display: flex;
   justify-content: center;
   align-items: center;
+}
 
-  height: 95vh;
+:host {
+  @include flex-center();
+  height: 100vh;
 }
 
 .container {
-  height: 500px;
-  width: 500px;
-  min-height: 500px;
-  min-width: 500px;
+  @include flex-center();
+
+  height: $container-height;
+  width: $container-width;
+  min-height: $container-height;
+  min-width: $container-width;
+
   background-color: lightblue;
   overflow: hidden;
   border: 0.2rem solid;
