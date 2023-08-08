@@ -106,6 +106,50 @@ export class MarkerMapComponent implements OnInit {
     if (!bound) return;
     if (!this.imageDimension || !this.containerDimension) return;
 
+    this.snapbackImageOnOverflow();
+    this.isImagePanning = false;
+  }
+
+  /**
+   * Function runs when draggin image around
+   * Happens only when MOUSE ON image.
+   */
+  handleMouseMove(event: MouseEvent) {
+    event.preventDefault();
+    if (!this.isImagePanning) return;
+
+    this.posBoundToImageDist = {
+      x: event.clientX - this.posImageToClickDist.x,
+      y: event.clientY - this.posImageToClickDist.y,
+    };
+
+    this.setTransform();
+  }
+
+  handleWheel(event: WheelEvent) {
+    event.preventDefault();
+    const xs = (event.clientX - this.posBoundToImageDist.x) / this.zoomFactor;
+    const ys = (event.clientY - this.posBoundToImageDist.y) / this.zoomFactor;
+    const delta = event.deltaY || event.detail || (-event as any).wheelDelta;
+
+    delta > 0
+      ? (this.zoomFactor = Math.min(
+          (this.zoomFactor *= 1.2),
+          this.MAX_ZOOM_VALUE ** 0.5
+        ))
+      : (this.zoomFactor = Math.max(
+          (this.zoomFactor /= 1.2),
+          this.MIN_ZOOM_VALUE ** 0.5
+        ));
+    this.posBoundToImageDist = {
+      x: event.clientX - xs * this.zoomFactor,
+      y: event.clientY - ys * this.zoomFactor,
+    };
+
+    this.snapbackImageOnOverflow();
+  }
+
+  snapbackImageOnOverflow() {
     const OVERFLOW_TOLERANCE = 0.5;
     const isTopOverFlow =
       this.imageDimension.bottom -
@@ -177,47 +221,6 @@ export class MarkerMapComponent implements OnInit {
     } else {
       this.setTransform();
     }
-
-    this.isImagePanning = false;
-  }
-
-  /**
-   * Function runs when draggin image around
-   * Happens only when MOUSE ON image.
-   */
-  handleMouseMove(event: MouseEvent) {
-    event.preventDefault();
-    if (!this.isImagePanning) return;
-
-    this.posBoundToImageDist = {
-      x: event.clientX - this.posImageToClickDist.x,
-      y: event.clientY - this.posImageToClickDist.y,
-    };
-
-    this.setTransform();
-  }
-
-  handleWheel(event: WheelEvent) {
-    event.preventDefault();
-    const xs = (event.clientX - this.posBoundToImageDist.x) / this.zoomFactor;
-    const ys = (event.clientY - this.posBoundToImageDist.y) / this.zoomFactor;
-    const delta = event.deltaY || event.detail || (-event as any).wheelDelta;
-
-    delta > 0
-      ? (this.zoomFactor = Math.min(
-          (this.zoomFactor *= 1.2),
-          this.MAX_ZOOM_VALUE ** 0.5
-        ))
-      : (this.zoomFactor = Math.max(
-          (this.zoomFactor /= 1.2),
-          this.MIN_ZOOM_VALUE ** 0.5
-        ));
-    this.posBoundToImageDist = {
-      x: event.clientX - xs * this.zoomFactor,
-      y: event.clientY - ys * this.zoomFactor,
-    };
-
-    this.setTransform();
   }
 }
 
