@@ -183,20 +183,18 @@ export class MarkerMapComponent implements OnInit {
     let targetY = this.posBoundToImageDist.y;
 
     if (isTopOverFlow) {
-      targetY = -(this.imageDimension.height * this.zoomFactor * 0.5);
+      targetY = -(this.imageDimension.height * 0.5);
     }
     if (isBottomOverflow) {
       targetY =
-        -(this.imageDimension.height * this.zoomFactor * 0.5) +
-        this.containerDimension.height;
+        -(this.imageDimension.height * 0.5) + this.containerDimension.height;
     }
     if (isLeftOverflow) {
-      targetX = -(this.imageDimension.width * this.zoomFactor * 0.5);
+      targetX = -(this.imageDimension.width * 0.5);
     }
     if (isRightOverflow) {
       targetX =
-        -(this.imageDimension.width * this.zoomFactor * 0.5) +
-        this.containerDimension.width;
+        -(this.imageDimension.width * 0.5) + this.containerDimension.width;
     }
 
     const animateImage = async () => {
