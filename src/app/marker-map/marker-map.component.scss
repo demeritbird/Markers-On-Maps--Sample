@@ -22,12 +22,13 @@ $container-width: 500px;
   background-color: lightblue;
   overflow: hidden;
   border: 0.2rem solid;
+
+  cursor: grab;
 }
 
 #bound {
   transform-origin: 0px 0px;
   transform: scale(1) translate(0px, 0px);
-  cursor: grab;
 }
 
 #image_ref {

@@ -1,12 +1,14 @@
-<div class="container" id="container" #container_ref>
-  <div
-    id="bound"
-    (mousedown)="handleMouseDown($event)"
-    (mouseup)="handleMouseLeave()"
-    (mouseleave)="handleMouseLeave()"
-    (mousemove)="handleMouseMove($event)"
-    (wheel)="handleWheel($event)"
-  >
+<div
+  class="container"
+  id="container"
+  #container_ref
+  (mousedown)="handleMouseDown($event)"
+  (mouseup)="handleMouseLeave()"
+  (mouseleave)="handleMouseLeave()"
+  (mousemove)="handleMouseMove($event)"
+  (wheel)="handleWheel($event)"
+>
+  <div id="bound">
     <img src="assets/dembird.png" alt="demeritbird" id="image_ref" #image_ref />
   </div>
 
