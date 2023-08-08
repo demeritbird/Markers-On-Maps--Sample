@@ -5,9 +5,15 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core';
+import { max } from 'rxjs';
 
 import { EMPTY_DOM_RECT } from 'src/utils/constants';
 import { Position } from 'src/utils/types';
+
+enum ImageOverflow {
+  NO_OVERFLOW,
+  OVERFLOW,
+}
 
 @Component({
   selector: 'app-marker-map',
@@ -20,6 +26,9 @@ export class MarkerMapComponent implements OnInit {
   @ViewChild('container_ref', { static: true }) containerView!: ElementRef;
   containerDimension: Omit<DOMRect, 'toJSON'> = EMPTY_DOM_RECT;
 
+  imageOverflowStatus: ImageOverflow = ImageOverflow.NO_OVERFLOW;
+
+  posImageCenter: Position = { x: 0, y: 0 };
   markerArray: Position[] = [];
 
   constructor(public elRef: ElementRef) {}
@@ -37,8 +46,11 @@ export class MarkerMapComponent implements OnInit {
     this.imageDimension = this.imageView.nativeElement.getBoundingClientRect();
     this.containerDimension =
       this.containerView.nativeElement.getBoundingClientRect();
-
-    if (!this.imageDimension || !this.containerDimension) return;
+    this.posImageCenter = {
+      x: this.imageDimension.x + this.imageDimension.width / 2,
+      y: this.imageDimension.y + this.imageDimension.height / 2,
+    };
+    this.imageOverflowStatus = ImageOverflow.NO_OVERFLOW;
   }
   triggerImageMoveEvent() {
     window.dispatchEvent(new CustomEvent('image-shift'));
@@ -64,9 +76,8 @@ export class MarkerMapComponent implements OnInit {
 
   setTransform() {
     const bound = document.getElementById('bound');
-    if (bound) {
-      bound.style.transform = `translate(${this.posBoundToImageDist.x}px, ${this.posBoundToImageDist.y}px) scale(${this.zoomFactor})`;
-    }
+    if (!bound) return;
+    bound.style.transform = `translate(${this.posBoundToImageDist.x}px, ${this.posBoundToImageDist.y}px) scale(${this.zoomFactor})`;
 
     this.triggerImageMoveEvent();
   }
@@ -76,6 +87,7 @@ export class MarkerMapComponent implements OnInit {
    */
   handleMouseDown(event: MouseEvent) {
     event.preventDefault();
+    if (this.isImagePanning) return;
 
     this.posImageToClickDist = {
       x: event.clientX - this.posBoundToImageDist.x,
@@ -88,6 +100,84 @@ export class MarkerMapComponent implements OnInit {
    * Function runs when mouseclick stopped inside image.
    */
   handleMouseLeave() {
+    if (!this.isImagePanning) return;
+
+    const bound = document.getElementById('bound');
+    if (!bound) return;
+    if (!this.imageDimension || !this.containerDimension) return;
+
+    const OVERFLOW_TOLERANCE = 0.5;
+    const isTopOverFlow =
+      this.imageDimension.bottom -
+        this.imageDimension.height * OVERFLOW_TOLERANCE <
+      this.containerDimension.top;
+    const isBottomOverflow =
+      this.imageDimension.top +
+        this.imageDimension.height * OVERFLOW_TOLERANCE >
+      this.containerDimension.bottom;
+    const isLeftOverflow =
+      this.imageDimension.right -
+        this.imageDimension.width * OVERFLOW_TOLERANCE <
+      this.containerDimension.left;
+    const isRightOverflow =
+      this.imageDimension.left +
+        this.imageDimension.width * OVERFLOW_TOLERANCE >
+      this.containerDimension.right;
+
+    if (
+      isTopOverFlow ||
+      isBottomOverflow ||
+      isLeftOverflow ||
+      isRightOverflow
+    ) {
+      this.imageOverflowStatus = ImageOverflow.OVERFLOW;
+    } else {
+      this.imageOverflowStatus = ImageOverflow.NO_OVERFLOW;
+    }
+
+    let targetX = this.posBoundToImageDist.x;
+    let targetY = this.posBoundToImageDist.y;
+
+    if (isTopOverFlow) {
+      targetY = -(this.imageDimension.height * this.zoomFactor * 0.5);
+    }
+    if (isBottomOverflow) {
+      targetY =
+        -(this.imageDimension.height * this.zoomFactor * 0.5) +
+        this.containerDimension.height;
+    }
+    if (isLeftOverflow) {
+      targetX = -(this.imageDimension.width * this.zoomFactor * 0.5);
+    }
+    if (isRightOverflow) {
+      targetX =
+        -(this.imageDimension.width * this.zoomFactor * 0.5) +
+        this.containerDimension.width;
+    }
+
+    const animateImage = async () => {
+      const dx = targetX - this.posBoundToImageDist.x;
+      const dy = targetY - this.posBoundToImageDist.y;
+
+      // FIXME: setting this below 1 might give an error where new animation input
+      // is entered while old animation is playing, hanging the image pan.
+      const EASING_FACTOR = 1;
+
+      this.posBoundToImageDist.x += dx * EASING_FACTOR;
+      this.posBoundToImageDist.y += dy * EASING_FACTOR;
+
+      this.setTransform();
+      if (Math.abs(dx) > 0.1 || Math.abs(dy) > 0.1) {
+        requestAnimationFrame(animateImage.bind(this));
+      }
+    };
+
+    if (this.imageOverflowStatus !== ImageOverflow.NO_OVERFLOW) {
+      animateImage.call(this);
+    } else {
+      this.setTransform();
+    }
+
     this.isImagePanning = false;
   }
 
