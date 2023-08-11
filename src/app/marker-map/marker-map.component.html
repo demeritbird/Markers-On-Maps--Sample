@@ -11,8 +11,8 @@
   >
     <div id="bound">
       <img
-        src="assets/dembird.png"
-        alt="demeritbird"
+        src="assets/target.png"
+        alt="template map"
         id="image_ref"
         #image_ref
       />
@@ -26,7 +26,7 @@
         [containerView]="containerView"
         [container]="containerDimension"
         [zoomFactor]="zoomFactor"
-        [posImageToMarkerDist]="{ x: marker.x, y: marker.y }"
+        [distImageToMarker]="{ x: marker.x, y: marker.y }"
       ></app-marker-point>
     </ng-container>
   </section>

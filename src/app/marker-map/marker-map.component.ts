@@ -130,11 +130,11 @@ export class MarkerMapComponent implements OnInit {
 
     delta > 0
       ? (this.zoomFactor = Math.min(
-          (this.zoomFactor *= 1.2),
+          (this.zoomFactor *= 1.1),
           this.MAX_ZOOM_VALUE ** 0.5
         ))
       : (this.zoomFactor = Math.max(
-          (this.zoomFactor /= 1.2),
+          (this.zoomFactor /= 1.1),
           this.MIN_ZOOM_VALUE ** 0.5
         ));
     this.distBoundToImage = {
