@@ -13,17 +13,32 @@ $container-width: 500px;
 
 .container {
   @include flex-center();
+  flex-direction: column;
 
-  height: $container-height;
-  width: $container-width;
-  min-height: $container-height;
-  min-width: $container-width;
+  &__image {
+    @include flex-center();
 
-  background-color: lightblue;
-  overflow: hidden;
-  border: 0.2rem solid;
+    height: $container-height;
+    width: $container-width;
+    min-height: $container-height;
+    min-width: $container-width;
 
-  cursor: grab;
+    background-color: lightblue;
+    overflow: hidden;
+    border: 0.2rem solid;
+
+    cursor: grab;
+  }
+
+  &__info {
+    width: 600px;
+    height: 200px;
+
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.25);
+    border-radius: 2rem;
+    padding: 2rem;
+    margin: 2rem;
+  }
 }
 
 #bound {

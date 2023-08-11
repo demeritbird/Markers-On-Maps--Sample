@@ -1,25 +1,36 @@
-<div
-  class="container"
-  id="container"
-  #container_ref
-  (mousedown)="handleMouseDown($event)"
-  (mouseup)="handleMouseLeave()"
-  (mouseleave)="handleMouseLeave()"
-  (mousemove)="handleMouseMove($event)"
-  (wheel)="handleWheel($event)"
->
-  <div id="bound">
-    <img src="assets/dembird.png" alt="demeritbird" id="image_ref" #image_ref />
-  </div>
+<main class="container">
+  <section
+    class="container__image"
+    id="container__image"
+    #container__image_ref
+    (mousedown)="handleMouseDown($event)"
+    (mouseup)="handleMouseLeave()"
+    (mouseleave)="handleMouseLeave()"
+    (mousemove)="handleMouseMove($event)"
+    (wheel)="handleWheel($event)"
+  >
+    <div id="bound">
+      <img
+        src="assets/dembird.png"
+        alt="demeritbird"
+        id="image_ref"
+        #image_ref
+      />
+    </div>
 
-  <ng-container *ngFor="let marker of markerArray">
-    <app-marker-point
-      [imageView]="imageView"
-      [image]="imageDimension"
-      [containerView]="containerView"
-      [container]="containerDimension"
-      [zoomFactor]="zoomFactor"
-      [posImageToMarkerDist]="{ x: marker.x, y: marker.y }"
-    ></app-marker-point>
-  </ng-container>
-</div>
+    <ng-container *ngFor="let marker of markerArray">
+      <app-marker-point
+        (selectPosEvent)="receiveNewPositionEvent($any($event))"
+        [imageView]="imageView"
+        [image]="imageDimension"
+        [containerView]="containerView"
+        [container]="containerDimension"
+        [zoomFactor]="zoomFactor"
+        [posImageToMarkerDist]="{ x: marker.x, y: marker.y }"
+      ></app-marker-point>
+    </ng-container>
+  </section>
+  <section class="container__info">
+    {{ selectedPos | json }}
+  </section>
+</main>

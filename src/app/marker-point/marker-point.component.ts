@@ -5,6 +5,8 @@ import {
   Renderer2,
   Input,
   OnChanges,
+  EventEmitter,
+  Output,
 } from '@angular/core';
 
 import { EMPTY_DOM_RECT } from 'src/utils/constants';
@@ -23,6 +25,8 @@ export class MarkerPointComponent implements AfterViewInit, OnChanges {
 
   @Input() zoomFactor: number = 1;
   @Input() posImageToMarkerDist: Position = { x: 0, y: 0 };
+
+  @Output() selectPosEvent: EventEmitter<Position> = new EventEmitter();
 
   posBountToMarkerDist: Position = { x: 0, y: 0 };
 
@@ -50,5 +54,9 @@ export class MarkerPointComponent implements AfterViewInit, OnChanges {
 
   ngOnChanges(): void {
     this.updateMarkerPosition();
+  }
+
+  emitNewPositionEvent() {
+    this.selectPosEvent.emit(this.posBountToMarkerDist);
   }
 }

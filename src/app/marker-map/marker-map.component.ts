@@ -23,7 +23,8 @@ enum ImageOverflow {
 export class MarkerMapComponent implements OnInit {
   @ViewChild('image_ref', { static: true }) imageView!: ElementRef;
   imageDimension: Omit<DOMRect, 'toJSON'> = EMPTY_DOM_RECT;
-  @ViewChild('container_ref', { static: true }) containerView!: ElementRef;
+  @ViewChild('container__image_ref', { static: true })
+  containerView!: ElementRef;
   containerDimension: Omit<DOMRect, 'toJSON'> = EMPTY_DOM_RECT;
 
   imageOverflowStatus: ImageOverflow = ImageOverflow.NO_OVERFLOW;
@@ -219,6 +220,12 @@ export class MarkerMapComponent implements OnInit {
     } else {
       this.setTransform();
     }
+  }
+
+  selectedPos: Position = { x: 0, y: 0 };
+
+  receiveNewPositionEvent(newPos: Position) {
+    this.selectedPos = newPos;
   }
 }
 

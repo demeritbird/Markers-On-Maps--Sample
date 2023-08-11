@@ -9,4 +9,5 @@
   class="marker"
   [style.left.px]="posBountToMarkerDist.x"
   [style.top.px]="posBountToMarkerDist.y"
+  (click)="emitNewPositionEvent()"
 ></div>
