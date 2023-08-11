@@ -28,7 +28,7 @@ export class MarkerPointComponent implements AfterViewInit, OnChanges {
 
   @Output() selectPosEvent: EventEmitter<Position> = new EventEmitter();
 
-  posBountToMarkerDist: Position = { x: 0, y: 0 };
+  distBoundToMarker: Position = { x: 0, y: 0 };
 
   constructor(public elRef: ElementRef, private renderer: Renderer2) {}
 
@@ -42,7 +42,7 @@ export class MarkerPointComponent implements AfterViewInit, OnChanges {
     this.image = this.imageView.nativeElement.getBoundingClientRect();
     this.container = this.containerView.nativeElement.getBoundingClientRect();
 
-    this.posBountToMarkerDist = {
+    this.distBoundToMarker = {
       x: this.image['left'] + this.posImageToMarkerDist.x * this.zoomFactor,
       y: this.image['top'] + this.posImageToMarkerDist.y * this.zoomFactor,
     };
@@ -56,7 +56,7 @@ export class MarkerPointComponent implements AfterViewInit, OnChanges {
     this.updateMarkerPosition();
   }
 
-  emitNewPositionEvent() {
-    this.selectPosEvent.emit(this.posBountToMarkerDist);
+  emitNewPositionEvent(): void {
+    this.selectPosEvent.emit(this.distBoundToMarker);
   }
 }

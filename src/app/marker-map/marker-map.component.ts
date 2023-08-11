@@ -5,7 +5,6 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core';
-import { max } from 'rxjs';
 
 import { EMPTY_DOM_RECT } from 'src/utils/constants';
 import { Position } from 'src/utils/types';
@@ -21,7 +20,8 @@ enum ImageOverflow {
   styleUrls: ['./marker-map.component.scss'],
 })
 export class MarkerMapComponent implements OnInit {
-  @ViewChild('image_ref', { static: true }) imageView!: ElementRef;
+  @ViewChild('image_ref', { static: true })
+  imageView!: ElementRef;
   imageDimension: Omit<DOMRect, 'toJSON'> = EMPTY_DOM_RECT;
   @ViewChild('container__image_ref', { static: true })
   containerView!: ElementRef;
@@ -29,12 +29,11 @@ export class MarkerMapComponent implements OnInit {
 
   imageOverflowStatus: ImageOverflow = ImageOverflow.NO_OVERFLOW;
 
-  posImageCenter: Position = { x: 0, y: 0 };
   markerArray: Position[] = [];
 
   constructor(public elRef: ElementRef) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     // Mock async calls from server
     setTimeout(() => {
       this.markerArray.push({ x: 100, y: 200 });
@@ -43,27 +42,23 @@ export class MarkerMapComponent implements OnInit {
     }, 500); // Perhaps dispatch event if async functions don't load?
   }
 
-  redefineElements() {
+  redefineElements(): void {
     this.imageDimension = this.imageView.nativeElement.getBoundingClientRect();
     this.containerDimension =
       this.containerView.nativeElement.getBoundingClientRect();
-    this.posImageCenter = {
-      x: this.imageDimension.x + this.imageDimension.width / 2,
-      y: this.imageDimension.y + this.imageDimension.height / 2,
-    };
     this.imageOverflowStatus = ImageOverflow.NO_OVERFLOW;
   }
-  triggerImageMoveEvent() {
+  triggerImageMoveEvent(): void {
     window.dispatchEvent(new CustomEvent('image-shift'));
   }
 
   @HostListener('window:resize')
-  onWindowResize() {
+  onWindowResize(): void {
     this.redefineElements();
   }
 
   @HostListener('window:image-shift')
-  onImageMove() {
+  onImageMove(): void {
     this.redefineElements();
   }
 
@@ -72,13 +67,13 @@ export class MarkerMapComponent implements OnInit {
   MIN_ZOOM_VALUE: number = 0.5;
 
   isImagePanning: boolean = false; // check whether mouse is currently clicking on image.
-  posBoundToImageDist: Position = { x: 0, y: 0 };
-  posImageToClickDist: Position = { x: 0, y: 0 };
+  distBoundToImage: Position = { x: 0, y: 0 };
+  distImageToClick: Position = { x: 0, y: 0 };
 
-  setTransform() {
+  setTransform(): void {
     const bound = document.getElementById('bound');
     if (!bound) return;
-    bound.style.transform = `translate(${this.posBoundToImageDist.x}px, ${this.posBoundToImageDist.y}px) scale(${this.zoomFactor})`;
+    bound.style.transform = `translate(${this.distBoundToImage.x}px, ${this.distBoundToImage.y}px) scale(${this.zoomFactor})`;
 
     this.triggerImageMoveEvent();
   }
@@ -86,13 +81,13 @@ export class MarkerMapComponent implements OnInit {
   /**
    * Function runs when mouseclick inside image
    */
-  handleMouseDown(event: MouseEvent) {
+  handleMouseDown(event: MouseEvent): void {
     event.preventDefault();
     if (this.isImagePanning) return;
 
-    this.posImageToClickDist = {
-      x: event.clientX - this.posBoundToImageDist.x,
-      y: event.clientY - this.posBoundToImageDist.y,
+    this.distImageToClick = {
+      x: event.clientX - this.distBoundToImage.x,
+      y: event.clientY - this.distBoundToImage.y,
     };
     this.isImagePanning = true;
   }
@@ -100,7 +95,7 @@ export class MarkerMapComponent implements OnInit {
   /**
    * Function runs when mouseclick stopped inside image.
    */
-  handleMouseLeave() {
+  handleMouseLeave(): void {
     if (!this.isImagePanning) return;
 
     const bound = document.getElementById('bound');
@@ -115,22 +110,22 @@ export class MarkerMapComponent implements OnInit {
    * Function runs when draggin image around
    * Happens only when MOUSE ON image.
    */
-  handleMouseMove(event: MouseEvent) {
+  handleMouseMove(event: MouseEvent): void {
     event.preventDefault();
     if (!this.isImagePanning) return;
 
-    this.posBoundToImageDist = {
-      x: event.clientX - this.posImageToClickDist.x,
-      y: event.clientY - this.posImageToClickDist.y,
+    this.distBoundToImage = {
+      x: event.clientX - this.distImageToClick.x,
+      y: event.clientY - this.distImageToClick.y,
     };
 
     this.setTransform();
   }
 
-  handleWheel(event: WheelEvent) {
+  handleWheel(event: WheelEvent): void {
     event.preventDefault();
-    const xs = (event.clientX - this.posBoundToImageDist.x) / this.zoomFactor;
-    const ys = (event.clientY - this.posBoundToImageDist.y) / this.zoomFactor;
+    const xs = (event.clientX - this.distBoundToImage.x) / this.zoomFactor;
+    const ys = (event.clientY - this.distBoundToImage.y) / this.zoomFactor;
     const delta = event.deltaY || event.detail || (-event as any).wheelDelta;
 
     delta > 0
@@ -142,7 +137,7 @@ export class MarkerMapComponent implements OnInit {
           (this.zoomFactor /= 1.2),
           this.MIN_ZOOM_VALUE ** 0.5
         ));
-    this.posBoundToImageDist = {
+    this.distBoundToImage = {
       x: event.clientX - xs * this.zoomFactor,
       y: event.clientY - ys * this.zoomFactor,
     };
@@ -150,7 +145,7 @@ export class MarkerMapComponent implements OnInit {
     this.snapbackImageOnOverflow();
   }
 
-  snapbackImageOnOverflow() {
+  snapbackImageOnOverflow(): void {
     const OVERFLOW_TOLERANCE = 0.5;
     const isTopOverFlow =
       this.imageDimension.bottom -
@@ -180,8 +175,8 @@ export class MarkerMapComponent implements OnInit {
       this.imageOverflowStatus = ImageOverflow.NO_OVERFLOW;
     }
 
-    let targetX = this.posBoundToImageDist.x;
-    let targetY = this.posBoundToImageDist.y;
+    let targetX = this.distBoundToImage.x;
+    let targetY = this.distBoundToImage.y;
 
     if (isTopOverFlow) {
       targetY = -(this.imageDimension.height * 0.5);
@@ -198,16 +193,16 @@ export class MarkerMapComponent implements OnInit {
         -(this.imageDimension.width * 0.5) + this.containerDimension.width;
     }
 
-    const animateImage = async () => {
-      const dx = targetX - this.posBoundToImageDist.x;
-      const dy = targetY - this.posBoundToImageDist.y;
+    const animateImage = (): void => {
+      const dx = targetX - this.distBoundToImage.x;
+      const dy = targetY - this.distBoundToImage.y;
 
       // FIXME: setting this below 1 might give an error where new animation input
       // is entered while old animation is playing, hanging the image pan.
       const EASING_FACTOR = 1;
 
-      this.posBoundToImageDist.x += dx * EASING_FACTOR;
-      this.posBoundToImageDist.y += dy * EASING_FACTOR;
+      this.distBoundToImage.x += dx * EASING_FACTOR;
+      this.distBoundToImage.y += dy * EASING_FACTOR;
 
       this.setTransform();
       if (Math.abs(dx) > 0.1 || Math.abs(dy) > 0.1) {
@@ -224,7 +219,7 @@ export class MarkerMapComponent implements OnInit {
 
   selectedPos: Position = { x: 0, y: 0 };
 
-  receiveNewPositionEvent(newPos: Position) {
+  receiveNewPositionEvent(newPos: Position): void {
     this.selectedPos = newPos;
   }
 }

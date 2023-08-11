@@ -1,13 +1,13 @@
 <div
   *ngIf="
     container &&
-    posBountToMarkerDist['x'] > container['left'] &&
-    posBountToMarkerDist['x'] < container['right'] &&
-    posBountToMarkerDist['y'] > container['top'] &&
-    posBountToMarkerDist['y'] < container['bottom']
+    distBoundToMarker['x'] > container['left'] &&
+    distBoundToMarker['x'] < container['right'] &&
+    distBoundToMarker['y'] > container['top'] &&
+    distBoundToMarker['y'] < container['bottom']
   "
   class="marker"
-  [style.left.px]="posBountToMarkerDist.x"
-  [style.top.px]="posBountToMarkerDist.y"
+  [style.left.px]="distBoundToMarker.x"
+  [style.top.px]="distBoundToMarker.y"
   (click)="emitNewPositionEvent()"
 ></div>
