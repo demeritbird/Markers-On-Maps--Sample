@@ -16,6 +16,7 @@ $container-width: 500px;
   flex-direction: column;
 
   &__image {
+    position: relative;
     @include flex-center();
     height: $container-height;
     width: $container-width;

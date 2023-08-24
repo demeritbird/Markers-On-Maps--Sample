@@ -1,16 +1,7 @@
 <div
   class="marker"
-  [ngClass]="{
-    'marker--invisible': !(
-      container &&
-      distBoundToMarker['x'] > container['left'] + MARKER_OVERFLOW_BUFFER &&
-      distBoundToMarker['x'] < container['right'] - MARKER_OVERFLOW_BUFFER &&
-      distBoundToMarker['y'] > container['top'] + MARKER_OVERFLOW_BUFFER &&
-      distBoundToMarker['y'] < container['bottom'] - MARKER_OVERFLOW_BUFFER
-    )
-  }"
-  [style.left.px]="distBoundToMarker.x"
-  [style.top.px]="distBoundToMarker.y"
+  [style.left.px]="distBoundToMarker.x - container.x"
+  [style.top.px]="distBoundToMarker.y - container.y"
   (click)="emitNewPositionEvent()"
 >
   <div class="marker__textbox">
