@@ -29,7 +29,6 @@ export class MarkerPointComponent implements AfterViewInit, OnChanges {
   @Output() selectPosEvent: EventEmitter<Position> = new EventEmitter();
 
   distBoundToMarker: Position = { x: 0, y: 0 };
-  MARKER_OVERFLOW_BUFFER: number = 3;
 
   constructor(public elRef: ElementRef, private renderer: Renderer2) {}
 
@@ -44,8 +43,14 @@ export class MarkerPointComponent implements AfterViewInit, OnChanges {
     this.container = this.containerView.nativeElement.getBoundingClientRect();
 
     this.distBoundToMarker = {
-      x: this.image['left'] + this.distImageToMarker.x * this.zoomFactor,
-      y: this.image['top'] + this.distImageToMarker.y * this.zoomFactor,
+      x:
+        this.image['left'] -
+        this.container.x +
+        this.distImageToMarker.x * this.zoomFactor,
+      y:
+        this.image['top'] -
+        this.container.y +
+        this.distImageToMarker.y * this.zoomFactor,
     };
   }
 

@@ -1,7 +1,7 @@
 <div
   class="marker"
-  [style.left.px]="distBoundToMarker.x - container.x"
-  [style.top.px]="distBoundToMarker.y - container.y"
+  [style.left.px]="distBoundToMarker.x"
+  [style.top.px]="distBoundToMarker.y"
   (click)="emitNewPositionEvent()"
 >
   <div class="marker__textbox">
